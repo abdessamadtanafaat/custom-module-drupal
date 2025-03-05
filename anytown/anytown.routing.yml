@@ -1,0 +1,9 @@
+anytown.weather_page:
+  # /weather/extended or /weather/short
+  path: '/weather/{style}'
+  defaults:
+    _title: 'Weather at the market'
+    _controller: '\Drupal\anytown\Controller\WeatherPage::build'
+    style: 'short'
+  requirements:
+    _permission: 'view weekly weather'
