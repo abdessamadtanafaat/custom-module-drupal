@@ -1,7 +1,6 @@
 **SPRINT 5 :** 
 ---------------
 
-
 **Uninstall the module, and install them again, what happens ?**
 
 The module is disabled and removed from the system.
@@ -14,7 +13,7 @@ The module is added back into Drupal’s system.
 A new entry is created in the database.
 
 
-**_Make change to core_version_requirement to a lower version, what happens ?_**
+**Make change to core_version_requirement to a lower version, what happens ?**
 
 In the **.info.yml,** We modify the file : 
 core_version_requirement: ^9 || ^10 || ^11 to core_version_requirement: ^8
@@ -62,6 +61,8 @@ The website encountered an unexpected error. Try again later.
 3. Improper Cleanup: Sometimes, when you delete a module, it doesn't fully clean up all its associated configurations, services, or links. This can leave services or configurations that are still referenced by other parts of the system, leading to circular dependencies.
 
 **DAY 2 :**
+--------------
+
 
 **1. How do I control or sort the menus (weight)?**
    Drupal allows you to control the order of menu items using the weight property in .links.menu.yml. Lower values appear first.
@@ -95,11 +96,11 @@ parent: my_module.weather_menu  # Makes it a child menu
 menu_name: main
 weight: 2
 "Forecast" appears as a submenu under "Weather".
+
 3. How do I retrieve a query string in a Controller?
    Use Symfony's Request object to get query strings.
 
-✅ Example: URL:
-/weather?city=London&unit=metric
+    /weather?city=London&unit=metric
 
 Controller:
 
@@ -129,8 +130,8 @@ $data = json_decode($response->getBody(), true);
 
 Logger (Logging System)
 Logs system messages (info, warning, error).
-Accessed via \Drupal::logger() or Dependency Injection.
 
+Accessed via \Drupal::logger() or Dependency Injection.
 \Drupal::logger('my_module')->info('This is an info log.');
 
 **5. Use Logger to log a message in a Controller. Where do these messages appear?**
