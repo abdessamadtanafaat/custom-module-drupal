@@ -97,7 +97,7 @@ menu_name: main
 weight: 2
 "Forecast" appears as a submenu under "Weather".
 
-3. How do I retrieve a query string in a Controller?
+**3. How do I retrieve a query string in a Controller?**
    Use Symfony's Request object to get query strings.
 
     /weather?city=London&unit=metric
