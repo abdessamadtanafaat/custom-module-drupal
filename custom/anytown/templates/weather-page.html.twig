@@ -14,6 +14,16 @@
 #}
 
 <div class="weather_page">
+
+  {% if is_front %}
+    <p>This is the front page!</p>
+  {% else %}
+    <p>This is NOT the front page.</p>
+  {% endif %}
+
+  {{ dump(is_front) }}
+
+
   <div class="weather_page--messages">
     {{ weather_intro }}
   </div>
@@ -31,4 +41,5 @@
       {{ weather_closures }}
     </div>
   {% endif %}
+
 </div>

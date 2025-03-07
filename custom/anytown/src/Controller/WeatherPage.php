@@ -48,7 +48,15 @@ class WeatherPage extends ControllerBase {
     // Style should be one of 'short', or 'extended'. And default to 'short'.
     $style = (in_array($style, ['short', 'extended'])) ? $style : 'short';
 
+    // Get the configuration object from the configuration factory service.
+    $settings = $this->config('anytown.settings');
+
     $url = 'https://raw.githubusercontent.com/DrupalizeMe/module-developer-guide-demo-site/main/backups/weather_forecast.json';
+
+    if ($location = $settings->get('location')) {
+      $url .= '?location=' . $location;
+    }
+
     $forecast_data = $this->forecastClient->getForecast($url);
 
     $table_rows = [];
@@ -136,8 +144,10 @@ class WeatherPage extends ControllerBase {
       // Example: {{ weather_intro }}.
       '#attached'=> [
         'library' => ['anytown/forecast'],
+        // ajouter settings ...
       ],
     '#weather_intro' => [
+      // essayer d'eviter hTML
         '#markup' => $this->t("<p>Check out this weekend's weather forecast and come prepared. The market is mostly outside, and takes place rain or shine.</p>"),
       ],
       '#weather_forecast' => $weather_forecast,
@@ -145,14 +155,13 @@ class WeatherPage extends ControllerBase {
       '#weather_closures' => [
         '#theme' => 'item_list',
         '#title' => $this->t('Weather related closures'),
-        '#items' => [
-          $this->t('Ice rink closed until winter - please stay off while we prepare it.'),
-          $this->t('Parking behind Apple Lane is still closed from all the rain last weekend.'),
-        ],
+        '#items' => explode(PHP_EOL, $settings->get('weather_closures')),
       ],
     ];
 
     return $build;
   }
 
+
 }
+
