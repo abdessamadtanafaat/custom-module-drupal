@@ -12,28 +12,27 @@ And when we Reinstall the Module :
 The module is added back into Drupal’s system.
 A new entry is created in the database.
 
-
 **Make change to core_version_requirement to a lower version, what happens ?**
 
 In the **.info.yml,** We modify the file : 
+```yml
 core_version_requirement: ^9 || ^10 || ^11 to core_version_requirement: ^8
+```
 
 Clear the cache. 
 
 Result: Drupal will mark the module as incompatible and may prevent it from being installed or enabled.
 
-
 **Add the module workflows as a dependency to your dependencies, what happens ? :** 
 
 In the .info.yml we add Workflows as dependency : 
-
+```yml
 dependencies:
   - workflows:workflows
+```
 
 The workflows:workflows part tells Drupal that the Workflows module is required for the module to work.
 When we try to install it from the UI , it gonna tell us that the workflows is required for the module.
-
-
 
 **Add a composer.json file to your modules :** 
 
@@ -52,7 +51,10 @@ The error : (Circular Reference)
 
 The website encountered an unexpected error. Try again later.
 
-[error]  ServiceCircularReferenceException: Circular reference detected for service 'module_handler', path: 'module_handler -> http_kernel -> http_middleware.ajax_page_state -> http_middleware.negotiation -> http_middleware.reverse_proxy -> shield.middleware -> ban.middleware -> http_middleware.page_cache -> page_cache_request_policy -> persistent_login.page_cache_request_policy.pending_persistent_login -> persistent_login.cookie_helper -> config.factory -> config.typed'.
+```php
+[error]  ServiceCircularReferenceException:
+  Circular reference detected for service 'module_handler', path: 'module_handler -> http_kernel -> http_middleware.ajax_page_state -> http_middleware.negotiation -> http_middleware.reverse_proxy -> shield.middleware -> ban.middleware -> http_middleware.page_cache -> page_cache_request_policy -> persistent_login.page_cache_request_policy.pending_persistent_login -> persistent_login.cookie_helper -> config.factory -> config.typed'.
+```
 
 **Why ?**
 
@@ -67,6 +69,7 @@ The website encountered an unexpected error. Try again later.
 **1. How do I control or sort the menus (weight)?**
    Drupal allows you to control the order of menu items using the weight property in .links.menu.yml. Lower values appear first.
 
+```yml
 my_module.weather_menu:
 title: 'Weather'
 route_name: my_module.weather_page
@@ -78,11 +81,13 @@ title: 'Forecast'
 route_name: my_module.forecast_page
 menu_name: main
 weight: 5  # Appears later
+```
+
 Lower weight = Higher priority in the menu order.
 
 **2. How do I set up child menus?**
    To create a submenu, define a parent in .links.menu.yml.
-
+```yml
 my_module.weather_menu:
 title: 'Weather'
 route_name: my_module.weather_page
@@ -95,9 +100,13 @@ route_name: my_module.forecast_page
 parent: my_module.weather_menu  # Makes it a child menu
 menu_name: main
 weight: 2
+```
+
 "Forecast" appears as a submenu under "Weather".
 
 **3. How do I retrieve a query string in a Controller?**
+```php
+
    Use Symfony's Request object to get query strings.
 
     /weather?city=London&unit=metric
@@ -117,12 +126,14 @@ return new JsonResponse([
 ]);
 }
 $request->query->get('key') fetches query string values.
+```
 
 **4. What is Guzzle and Logger?**
 
-   Guzzle (HTTP Client)
-   A library for making HTTP requests (fetching external APIs).
-   Used via \Drupal::httpClient().
+Guzzle (HTTP Client)
+A library for making HTTP requests (fetching external APIs).
+Used via \Drupal::httpClient().
+```php
 
 $client = \Drupal::httpClient();
 $response = $client->get('https://api.example.com/data');
@@ -133,8 +144,10 @@ Logs system messages (info, warning, error).
 
 Accessed via \Drupal::logger() or Dependency Injection.
 \Drupal::logger('my_module')->info('This is an info log.');
+```
 
 **5. Use Logger to log a message in a Controller. Where do these messages appear?**
+```php
 
 use Psr\Log\LoggerInterface;
 public function logExample(LoggerInterface $logger) {
@@ -142,6 +155,8 @@ $logger->info('Weather module loaded successfully.');
 $logger->warning('Something might be wrong.');
 $logger->error('An error occurred!');
 }
+```
+
 Where to Find Logs?
 
 Drupal Admin UI: admin/reports/dblog (Enable Database Logging module).
@@ -163,6 +178,7 @@ Using Autowiring (Recommended) :
 Define the service in your_module.services.yml.
 Use dependency injection in the constructor.
 
+```php
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 
 class MyService {
@@ -172,11 +188,12 @@ protected $logger;
         $this->logger = $logger;
     }
 } 
+```
 
 Using create() Method (Manual Injection) : 
-
 Useful when the class implements ContainerInjectionInterface.
 
+```php
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class MyController {
@@ -186,7 +203,11 @@ protected $logger;
         return new static($container->get('logger.factory'));
     }
 }
+```
+
 Using Trait (For Common Services)
+
+```php
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Logger\LoggerChannelTrait;
@@ -194,9 +215,10 @@ use Drupal\Core\Logger\LoggerChannelTrait;
 class MyService implements ContainerInjectionInterface {
 use LoggerChannelTrait;
 }
-
+```
 **8. How do you return a Twig template in a Controller?**
 
+```php
 Using #theme and #variables.
 public function weatherPage() {
 return [
@@ -204,34 +226,43 @@ return [
 '#data' => ['city' => 'London'],
 ];
 } 
+```
 
 Create a Twig template: templates/weather-template.html.twig : 
 
+```php
 <p>Weather in {{ data.city }}</p>
 
 **10. Given  $this->t('Hello, @name!', ['@name' => $username]), what is the search
     keyword to find it at  /admin/config/regional/translate?**
 
     The search keyword is  "Hello, " because @name is changeable and not fixed.
+```
 
 **11. How do you make a string translatable in Drupal JavaScript files?**
 
+```php
     alert(Drupal.t('Hello World!'));
+```
 
 **12. Use Drush PHP to get the service path.alias_manager.**
 
 drush php
 Then, inside Drush PHP shell:
+```php
 $aliasManager = \Drupal::service('path_alias.manager');
+```
 
 **13. Get the alias of a node, given node/1.**
 
+```php
 $aliasManager = \Drupal::service('path.alias_manager');
 $alias = $aliasManager->getAliasByPath('/node/1');
 echo $alias;
+```
 
 **14. Use Link and Url to get the full URL of one of your routes.**
-
+```php
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 
@@ -239,10 +270,11 @@ $url = Url::fromRoute('my_module.weather_page');
 $link = Link::fromTextAndUrl('Weather Page', $url)->toString();
 Returns:
 <a href="/weather">Weather Page</a>
-
+```
 
 **15. How do you send a JSON response in a Controller instead of a display?**
 
+```php
 Using JsonResponse with a proper Content-Type.
 
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -255,17 +287,19 @@ $data = [
 return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
 }
 Returns JSON with Content-Type: application/json.
+```
 
 DAY 4__QUESTIONS : Drupal Form Handling Guide
 ---------------------------------------------
 
 
-1. Where can you validate your form data?
+**1. Where can you validate your form data?**
 
 In Drupal, you can validate form data using the validateForm method inside a Form class or by implementing a hook.
 
 Method 1: Using validateForm in a Custom Form Class
 
+```php
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -296,9 +330,10 @@ class MyCustomForm extends FormBase {
     }
   }
 }
+```
 
-Method 2: Using hook_form_alter() to Add Validation
-
+Method 2: Using hook_form_alter() to Add Validation : 
+```php
 function mymodule_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if ($form_id == 'some_existing_form') {
     $form['#validate'][] = 'mymodule_custom_validation';
@@ -311,13 +346,15 @@ function mymodule_custom_validation(&$form, FormStateInterface $form_state) {
     $form_state->setErrorByName('some_field', t('This field cannot be empty.'));
   }
 }
+```
 
-2. How to Render a Form Inside a Block?
+**2. How to Render a Form Inside a Block?**
 
 Step 1: Create a Block Plugin
 
 Create a new file: my_module/src/Plugin/Block/MyCustomFormBlock.php
 
+```php
 namespace Drupal\my_module\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
@@ -354,8 +391,9 @@ class MyCustomFormBlock extends BlockBase implements ContainerFactoryPluginInter
     return $this->formBuilder->getForm('Drupal\my_module\Form\MyCustomForm');
   }
 }
+```
 
-Step 2: Enable the Block
+**Step 2: Enable the Block**
 
 Go to Structure → Block layout.
 
@@ -363,25 +401,31 @@ Click Place Block in a region.
 
 Search for "My Custom Form Block" and place it.
 
-3. How to Redirect a User After Submitting a Form?
+**3. How to Redirect a User After Submitting a Form?**
 
 Inside the submitForm() method:
 
+```php
 public function submitForm(array &$form, FormStateInterface $form_state) {
   $form_state->setRedirect('user.page'); // Redirect to user profile page
 }
+```
 
 To redirect to a custom route:
 
+```php
 $form_state->setRedirect('my_module.custom_page');
-
+```
 Ensure that my_module.custom_page is defined in mymodule.routing.yml.
 
-4. How to Display a Success Message (Green) After Submitting a Form?
+**4. How to Display a Success Message (Green) After Submitting a Form
+**
 
 Use the Messenger service inside submitForm():
 
+```php
 \Drupal::messenger()->addMessage($this->t('Form submitted successfully!'), 'status');
+```
 
 Other message types:
 
@@ -393,12 +437,15 @@ Other message types:
 
 Example:
 
+```php
 \Drupal::messenger()->addMessage($this->t('Something went wrong!'), 'error');
+```
 
-5. How to Hide a Field for Anonymous Users Using #access?
+**5. How to Hide a Field for Anonymous Users Using #access?**
 
 Check the user role in buildForm() and use #access:
 
+```php
 use Drupal\Core\Session\AccountInterface;
 use Drupal::currentUser;
 
@@ -413,17 +460,19 @@ public function buildForm(array $form, FormStateInterface $form_state) {
 
   return $form;
 }
+```
 
 For anonymous users:
-
+```php
 $form['secret_field'] = [
   '#type' => 'textfield',
   '#title' => 'Secret Field',
   '#access' => \Drupal::currentUser()->isAuthenticated(), // Hides from anonymous users
 ];
+```
 
-6. How to Group Fields Together in a Form (Like Field Group Module)?
-
+**6. How to Group Fields Together in a Form?**
+```php
 Use #type => 'details' to create collapsible fieldsets:
 
 $form['group'] = [
@@ -441,10 +490,11 @@ $form['group']['field_two'] = [
   '#type' => 'textfield',
   '#title' => $this->t('Field Two'),
 ];
+```
 
 Other options:
-
+```php
 #type => 'fieldset' (non-collapsible)
 
 #type => 'container' (group fields without UI change)
-
+```
