@@ -1,0 +1,18 @@
+<?php
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_entity_base_field_info_alter().
+ */
+function article_title_alter_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
+  // Ensure we are modifying the 'node' entity type.
+  if ($entity_type->id() === 'node' && isset($fields['title'])) {
+    // Modify the title field for the 'article' content type.
+    $fields['title']->setLabel(t('Custom Article Title'))
+      ->setDescription(t('Enter a custom title for your article.'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 100);
+  }
+}

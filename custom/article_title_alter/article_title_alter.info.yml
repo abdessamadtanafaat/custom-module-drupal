@@ -1,0 +1,5 @@
+name: 'Article Title Alter'
+type: module
+description: 'Alters the title field in article content types.'
+package: Custom
+core_version_requirement: ^10 || ^11
