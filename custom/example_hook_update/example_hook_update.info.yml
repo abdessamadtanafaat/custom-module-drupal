@@ -1,0 +1,5 @@
+name: 'example_hook_update'
+type: module
+description: 'This example adds a new column and updates existing records.'
+package: Custom
+core_version_requirement: ^10 || ^11

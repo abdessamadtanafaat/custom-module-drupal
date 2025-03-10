@@ -1,0 +1,88 @@
+<?php
+
+ /**
+  * @file
+  * Implements example_hook_update_8001().
+  */
+
+function example_hook_update_update_8001(&$sandbox) {
+  // Step 1: Create a table if it does not already exist.
+  $schema = \Drupal::database()->schema();
+  if (!$schema->tableExists('my_table')) {
+    $schema->createTable('my_table', [
+      'fields' => [
+        'my_primary_key' => [
+          'type' => 'serial',
+          'not null' => TRUE
+        ],
+        'name' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+          'description' => 'Name field',
+        ],
+        'status' => [
+          'type' => 'int',
+          'not null' => FALSE,
+          'description' => 'Status field',
+        ],
+      ],
+      'primary key' => ['my_primary_key'],
+    ]);
+    // Adding a message indicating the table was created.
+    \Drupal::logger('my_module')->notice('Table my_table created.');
+  }
+
+  // Step 2: Add a new field to the table if it doesn't exist yet.
+  if (!$schema->fieldExists('my_table', 'new_field')) {
+    $spec = [
+      'type' => 'varchar',
+      'length' => 20,
+      'not null' => FALSE,
+      'description' => "New Field in the Table",
+    ];
+    $schema->addField('my_table', 'new_field', $spec);
+    \Drupal::logger('my_module')->notice('New field "new_field" added to my_table.');
+  }
+
+  // Step 3: Perform a batch update for existing records in the table.
+  if (!isset($sandbox['progress'])) {
+    // Initialize the sandbox for batch updates
+    $sandbox['progress'] = 0;
+    $sandbox['current_pk'] = 0;
+    $sandbox['max'] = \Drupal::database()->query('SELECT COUNT([my_primary_key]) FROM {my_table}')
+      ->fetchField();
+  }
+
+  // Step 4: Update records in batches (20 records per batch).
+  $records = \Drupal::database()->select('my_table', 'm')
+    ->fields('m', ['my_primary_key', 'name', 'status'])
+    ->condition('my_primary_key', $sandbox['current_pk'], '>')
+    ->range(0, 20)
+    ->orderBy('my_primary_key', 'ASC')
+    ->execute();
+
+  foreach ($records as $record) {
+    // Example: Update the 'status' field for each record.
+    \Drupal::database()->update('my_table')
+      ->fields(['status' => 1]) // Example: setting status to 1.
+      ->condition('my_primary_key', $record->my_primary_key)
+      ->execute();
+
+    // Example: Update the 'new_field' with some value (optional).
+    \Drupal::database()->update('my_table')
+      ->fields(['new_field' => 'Updated'])
+      ->condition('my_primary_key', $record->my_primary_key)
+      ->execute();
+
+    // Increment progress in the sandbox.
+    $sandbox['progress']++;
+    $sandbox['current_pk'] = $record->my_primary_key;
+  }
+
+  // Step 5: Finalize the batch update and display progress.
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : $sandbox['progress'] / $sandbox['max'];
+
+  // Step 6: Display completion message.
+  return t('All records have been updated.');
+}
