@@ -1,0 +1,46 @@
+<?php
+
+function my_theme_overrides_theme()
+{
+  return [
+    'node__article__custom' => [
+      'template' => 'node--article--custom',
+      'base hook' => 'node',
+    ],
+    'user__full' => [
+      'template' => 'user--full',
+      'base hook' => 'node',
+    ],
+    'user__teaser' => [
+      'template' => 'user--teaser',
+      'base hook' => 'node',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for node templates.
+ */
+
+function my_theme_overrides_theme_suggestions_node_alter(array &$suggestions, array $variables) {
+  {
+
+    if (isset($variables['elements']['#node']) && $variables['elements']['#node'] instanceof \Drupal\node\NodeInterface) {
+      if ($variables['elements']['#node']->bundle() == 'article') {
+        $suggestions[] = 'node__article__custom';
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_alter() for the 'user' theme hook.
+ */
+function my_theme_overrides_theme_suggestions_alter(array &$suggestions, array $variables, $hook) {
+  if ($hook === 'user' && isset($variables['elements']['#view_mode'])) {
+    // Get the view mode from the variables
+    $view_mode = $variables['elements']['#view_mode'];
+    // Add a custom theme suggestion based on the view mode
+    $suggestions[] = 'user__' . $view_mode;
+  }
+}

@@ -1,0 +1,5 @@
+name: 'My Theme Overrides'
+type: module
+description: 'Override theme hooks for specific templates.'
+package: Custom
+core_version_requirement: ^10 || ^11
