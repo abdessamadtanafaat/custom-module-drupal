@@ -1,0 +1,5 @@
+name: 'Check Node Title Change'
+type: module
+description: 'A module to check if a node title has changed.'
+package: Custom
+core_version_requirement: ^10 || ^11

@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * Implements hook_entity_presave().
+ */
+function check_node_title_change_entity_presave(Drupal\Core\Entity\EntityInterface $entity) {
+  // Check if the entity is a node.
+  if ($entity->getEntityTypeId() == 'node') {
+    // Get the original and current titles
+    $original_title = $entity->original->getTitle();
+    $current_title = $entity->getTitle();
+
+    // Compare the titles
+    if ($current_title != $original_title) {
+      \Drupal::messenger()->addMessage('The node title has been modified. Original: "' . $original_title . '" | Current: "' . $current_title . '"');
+    }
+
+  }
+}
