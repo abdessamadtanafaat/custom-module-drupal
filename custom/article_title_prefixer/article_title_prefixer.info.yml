@@ -1,0 +1,5 @@
+name: 'Article Title Prefixer'
+type: module
+description: 'refixes newly created article node titles with HEY-'
+package: Custom
+core_version_requirement: ^10 || ^11

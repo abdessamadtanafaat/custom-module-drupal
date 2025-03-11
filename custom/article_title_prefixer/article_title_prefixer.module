@@ -1,0 +1,24 @@
+<?php
+
+use Drupal\node\NodeInterface;
+
+/**
+ * Implements hook_node_presave().
+ *
+ * Adds "HEY-" to the title of newly created article nodes and logs debugging information.
+ */
+function article_title_prefixer_node_presave(\Drupal\Core\Entity\EntityInterface $entity) {
+  // Check if the entity is a node and of type 'article' and is newly created.
+  if ($entity instanceof NodeInterface && $entity->bundle() === 'article' && $entity->isNew()) {
+
+    // Get the current title.
+    $current_title = $entity->getTitle();
+
+    // Ensure we don't double-prefix
+    if (strpos($current_title, 'HEY-') !== 0) {
+      // Prefix the title with "HEY-"
+      $entity->setTitle('HEY-' . $current_title);
+
+    }
+  }
+}
