@@ -1,0 +1,28 @@
+id: program_categories
+label: 'Import Program Categories from CSV'
+migration_group: my_migrate
+source:
+  plugin: csv
+  path: modules/custom/my_migrate/migrate_source/programs_tags.csv
+  delimiter: ','
+  enclosure: '"'
+  escape: "\\"
+  header_row_count: 1
+  keys:
+    - tag_name
+  column_names:
+    0:
+      tag_name: 'tag_name'
+process:
+  name: tag_name
+
+destination:
+  plugin: entity:taxonomy_term
+  default_bundle: program_categories
+
+migration_dependencies: {}
+
+dependencies:
+  enforced:
+    module:
+      - my_migrate

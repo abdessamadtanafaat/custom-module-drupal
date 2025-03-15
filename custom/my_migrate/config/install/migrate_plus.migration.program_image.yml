@@ -1,0 +1,26 @@
+id: program_image
+label: 'Program Images Migration'
+migration_group: my_migrate
+source:
+  plugin: csv
+  path: modules/custom/my_migrate/migrate_source/images.csv
+  header_row_count: 1
+  keys:
+    - file_uri
+  fields:
+    - name: file_uri
+      label: 'File URI'
+  # If the image filenames are relative paths, we may need to specify the base path for them.
+  base_path: modules/custom/my_migrate/migrate_source
+process:
+  file_uri: file_uri
+  fid:
+    plugin: file_copy
+    source: file_uri
+    destination_directory: 'public://migrate_destination'
+  # This will map the source 'file_uri' to the 'file' field in the destination, which is the default for image fields in Drupal.
+destination:
+  plugin: 'entity:file'
+dependencies:
+  required:
+    - my_migrate

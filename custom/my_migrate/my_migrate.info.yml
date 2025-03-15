@@ -1,0 +1,10 @@
+name: 'My Migrate'
+type: module
+description: 'Custom module to migrate academic programs data'
+package: Custom
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:migrate
+  - drupal:migrate_plus
+  - drupal:migrate_tools
+  - drupal:migrate_source_csv

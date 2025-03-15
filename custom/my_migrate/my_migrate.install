@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Install file for My Migrate module.
+ */
+
+use Drupal\Core\File\FileSystemInterface;
+
+/**
+ * Implements hook_install().
+ */
+function my_migrate_install() {
+  $file_system = \Drupal::service('file_system');
+
+  // Define the directory path. "sites/default/files/" = public
+  $directory = 'public://migrate_source';
+
+  if (!$file_system->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
+    \Drupal::logger('my_migrate')->error('Failed to create the directory: @dir', ['@dir' => $directory]);
+  }
+}

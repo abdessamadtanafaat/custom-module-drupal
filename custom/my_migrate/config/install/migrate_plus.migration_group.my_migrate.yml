@@ -1,0 +1,8 @@
+id: my_migrate
+label: My Migrate Group
+description: Migration setup for academic programs.
+source_type: CSV files
+dependencies:
+  enforced:
+    module:
+      - my_migrate

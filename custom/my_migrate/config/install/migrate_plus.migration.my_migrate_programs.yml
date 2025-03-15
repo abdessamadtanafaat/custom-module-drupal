@@ -1,0 +1,35 @@
+id: my_migrate_programs
+label: 'Import Programs from CSV'
+migration_group: my_migrate
+source:
+  plugin: csv
+  path: modules/custom/my_migrate/migrate_source/programs.csv
+  delimiter: ','
+  enclosure: '"'
+  escape: "\\"
+  header_row_count: 1
+  keys:
+    - program_id
+  column_names:
+    program_id: 'program_id'
+    title: 'title'
+    type: 'type'
+    level: 'level'
+    escape: ""  # Setting escape character to empty means no escape character.
+
+process:
+  title: title
+  field_program_id: program_id
+  field_type: type
+  field_level: level
+
+destination:
+  plugin: entity:node
+  default_bundle: program
+
+migration_dependencies: {}
+
+dependencies:
+  enforced:
+    module:
+      - my_migrate

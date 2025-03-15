@@ -1,0 +1,28 @@
+id: my_migrate_data
+label: 'Migrate Data from MySQL Database'
+migration_group: my_migrate
+source:
+  plugin: database
+  key: default  # use the default connection from settings.php
+  query: "SELECT id, name, description FROM  programs_table"
+  # we can also use a more complex query or join multiple tables if needed
+  fields:
+    - name: id
+      label: 'ID'
+    - name: name
+      label: 'Name'
+    - name: description
+      label: 'Description'
+process:
+  title: name
+  body:
+    plugin: default_value
+    default_value: '@description'
+destination:
+  plugin: entity:node
+  default_bundle: article  # Assuming we want to import data as 'article' nodes
+migration_dependencies: {}
+dependencies:
+  enforced:
+    module:
+      - my_migrate
